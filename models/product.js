@@ -17,7 +17,7 @@ const productSchema=new mongoose.Schema({
               transmision:{type:String,default:'Manual'},
               description:{type:String},
           },
-    slug:{type:String,unique:true},
+    slug:{type:String},
     catagory:{type:mongoose.Schema.Types.ObjectId,ref:'Catagories'},
     bids:[
         {
@@ -28,7 +28,8 @@ const productSchema=new mongoose.Schema({
     ],
     productPictures:[{
         img:{type:String}
-    }]
+    }],
+    status:{type:Boolean,default:true}
 
 })
 

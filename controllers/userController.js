@@ -90,6 +90,7 @@ exports.User=Object.create({
     },
     ActiveStatusUpdate: async (req,res) => {
         const {id}=req.params;
+        console.log(req.body)
         await Users.findByIdAndUpdate({_id:id},{...req.body},{new:true})
         .exec( async (_error,_user) => {
             if(_error) return await res.status(400).json({_error});

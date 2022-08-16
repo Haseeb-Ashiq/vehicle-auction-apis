@@ -3,33 +3,35 @@ const Products=require('../models/product');
 exports.Product=Object.create({
 
     Register:async (req,res) => {
+        const {name,auctionEndDate,catagory,productModel,
+            productBuyDate,
+            showRoom,
+            numberPlate,
+            cylender,
+            engineNumber,
+            milege,
+            transmision,
+            description}=req.body;
         const product=new Products({
-            name:'Honda Civic',
-            price:'350000',
-            auctionStartDate:new Date().getTime(),
-            auctionEndDate:new Date('2022-07-10').getTime(),
+            name,
+            auctionStartDate:new Date().toLocaleDateString(),
+            auctionEndDate,
+            catagory,
             detail:{
-                productModel:'Fa 2015',
-                productBuyDate:'2015-06-03',
-                showRoom:'Multan Honda Car Center',
-                numberPlate:'MHA 3344',
-                cylender:'4',
-                milege:'65km/1ltr',
-                transmision:'Automatic',
-                engineNumber:'HONDA-CA-5001',
-                description:'Honda civic new Variant by honda company running millege is out stadding.'
+                productModel,
+                productBuyDate,
+                showRoom,
+                numberPlate,
+                cylender,
+                engineNumber,
+                milege,
+                transmision,
+                description
             },
-            slug:'hondacivic6',
-            catagory:'62c7a6aae2eb9a771ea9d299',
-            productPictures:[
-                {
-                    img:'honda-front-pic.jpg'
-                }
-                ,
-                {
-                    img:'honda-back-pic.jpg'
-                }
-            ]
+            slug:name,
+            productPictures:req.files.map((img)=>{
+                return {img:img.filename}
+            })
         })
         await product.save((error,pro)=>{
                 if(error) return res.status(400).json(error.message)
@@ -50,32 +52,28 @@ exports.Product=Object.create({
             if(_pro) return await res.status(200).json({_pro});
         })
     },
+    GetOneProduct:async (req,res)=>{
+        await Products.findOne({_id:req.params.id})
+        .exec( async (_error,_pro) => {
+            if(_error) return await res.status(400).json(_error);
+            if(_pro) return await res.status(200).json({_pro});
+        })
+    },
     Update:async(req,res)=>{
         const {id}=req.params;
-        await Products.findByIdAndUpdate(id,{...req.body},{new:true})
+        await Products.findByIdAndUpdate({_id:id},{...req.body,productPictures:req?.files?.filename},{new:true})
         .exec( async (_error,_pro) => {
             if(_error) return await res.status(400).json(_error);
             if(_pro) return await res.status(200).json({_updatedProduct:_pro});
         })
 
     },
-    AddBid:async (req,res)=>{
-        const {id}=req.params;
-        let bids=req.body.bids.map((_bid)=>{
-            return {user:_bid.user,bid:_bid.bid,bidDate:Date.now()}
-        })
-        console.log(bids);
-        // await Products.findByIdAndUpdate(id,{bids},{new:true})
-        // .exec( async (_error,_pro) => {
-        //     if(_error) return await res.status(400).json(_error);
-        //     if(_pro) return await res.status(200).json({_updatedProduct:_pro});
-        // })
-    },
     Delete:async (req,res)=>{
-        await Products.findByIdAndDelete({_id:req.params.id})
+        const {id} = req.params;
+        await Products.findByIdAndUpdate({_id:id},{...req.body},{new:true})
         .exec( async (_error,_pro) => {
             if(_error) return await res.status(400).json(_error);
-            if(_pro) return await res.status(200).json({message:'deleted successfull'});
+            if(_pro) return await res.status(200).json({_pro});
         })
     }
     
